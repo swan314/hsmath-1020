@@ -1,7 +1,6 @@
-
-import streamlit as st
 import random
 import math
+import streamlit as st  # ✅ FIX: 누락된 임포트 추가
 
 st.title("분수의 약분 마스터")
 
@@ -47,6 +46,7 @@ if st.session_state.step == 1.5:
     if st.button("다음", key="go_to_reduction"):
         st.session_state.step = 2
         st.session_state.show_next = False
+        st.rerun()  # ✅ FIX: 즉시 재실행하여 1.5단계 메시지 잔존 방지
 
 if st.session_state.step == 4:
     st.write(f"{numerator}/{denominator} 를 {st.session_state.current_divisor}로 나누면 어떻게 되나요?")
@@ -58,6 +58,9 @@ if st.session_state.step == 4:
         if user_num == correct_num and user_den == correct_den:
             # 기약분수인지 확인
             if math.gcd(correct_num, correct_den) == 1:
+                # ✅ FIX: 최종 값으로 갱신 후 step=3
+                st.session_state.numerator = correct_num
+                st.session_state.denominator = correct_den
                 st.session_state.step = 3
             else:
                 st.info("기약분수가 아니네요. 더 약분해 볼까요?")
@@ -67,6 +70,11 @@ if st.session_state.step == 4:
                 st.session_state.step = 2.5
 
 if st.session_state.step == 2.5:
+    st.info("기약분수가 아니네요. 더 약분해 볼까요?")
+    if st.button("다음", key="next_to_repeat"):
+        st.session_state.step = 2.55
+
+if st.session_state.step == 2.55:
     st.write(f"분수 {st.session_state.numerator}/{st.session_state.denominator} 를 더 약분해봅시다.")
     st.info("약분할 숫자를 선택하세요.")
     user_divisor = st.number_input("어떤 수로 나눌 수 있나요? (2~50)", min_value=2, max_value=50, step=1, key="user_divisor_input_repeat")
@@ -79,9 +87,8 @@ if st.session_state.step == 2.5:
             st.warning("답이 맞지 않아요. 다시 생각해보세요")
 
 if st.session_state.step == 2.6:
-    # 두번째 이후 반복에서는 바로 약분 입력 화면으로 이동
     st.session_state.step = 2.7
-    st.experimental_rerun()
+    st.rerun()  # ✅ 권장: experimental_rerun 대신 rerun
 
 if st.session_state.step == 2.7:
     st.write(f"문제로 제시한 분수 {st.session_state.numerator}/{st.session_state.denominator} 를 {st.session_state.current_divisor}로 약분하세요.")
@@ -92,6 +99,9 @@ if st.session_state.step == 2.7:
         correct_den = st.session_state.denominator // st.session_state.current_divisor
         if user_num == correct_num and user_den == correct_den:
             if math.gcd(correct_num, correct_den) == 1:
+                # ✅ FIX: 최종 값으로 갱신 후 step=3
+                st.session_state.numerator = correct_num
+                st.session_state.denominator = correct_den
                 st.session_state.step = 3
             else:
                 st.info("기약분수가 아니네요. 더 약분해 볼까요?")
@@ -112,6 +122,9 @@ if st.session_state.step == 2:
         if user_num == correct_num and user_den == correct_den:
             # 기약분수인지 확인
             if math.gcd(correct_num, correct_den) == 1:
+                # ✅ FIX: 최종 값으로 갱신 후 step=3
+                st.session_state.numerator = correct_num
+                st.session_state.denominator = correct_den
                 st.session_state.step = 3
             else:
                 st.info("기약분수가 아니네요. 더 약분해 볼까요?")
@@ -124,7 +137,6 @@ if st.session_state.step == 2:
 
 if st.session_state.step == 3:
     if 'show_success' not in st.session_state or st.session_state.show_success:
-        # 마지막으로 구한 분수(직전 약분 결과)를 표시
         final_num = st.session_state.numerator
         final_den = st.session_state.denominator
         st.success(f"정답: {final_num}/{final_den}  \n기약분수 입니다. 잘 했어요!")
@@ -134,3 +146,4 @@ if st.session_state.step == 3:
         st.session_state.numerator, st.session_state.denominator = generate_fraction()
         st.session_state.current_divisor = None
         st.session_state.show_success = True
+        st.rerun()

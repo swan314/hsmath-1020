@@ -3,6 +3,7 @@ import math
 import streamlit as st  # ✅ FIX: 누락된 임포트 추가
 
 st.title("분수의 약분 마스터")
+st.markdown("<style>div[data-testid='stNumberInput'] {width: 10cm !important;}</style>", unsafe_allow_html=True)
 
 def generate_fraction():
     while True:
@@ -31,7 +32,12 @@ denominator = st.session_state.denominator
 if st.session_state.step == 1:
     st.write(f"**문제:** {numerator}/{denominator} 를 약분해봅시다.")
     st.info("분수를 보고, 어떤 수로 나눌 수 있는지 직접 입력하세요.")
-    user_divisor = st.number_input("어떤 수로 나눌 수 있나요? (2~50)", min_value=2, max_value=50, step=1, key="user_divisor_input_new")
+    user_divisor = st.number_input(
+        "어떤 수로 나눌 수 있나요? (2~50)", min_value=1, max_value=50, step=1, key="user_divisor_input_new",
+        label_visibility="visible",
+        help=None,
+        format="%d",
+    )
     if st.button("완료", key="divisor_btn"):
         divisors = get_divisors(numerator, denominator)
         if user_divisor in divisors:
@@ -77,12 +83,13 @@ if st.session_state.step == 2.5:
 if st.session_state.step == 2.55:
     st.write(f"분수 {st.session_state.numerator}/{st.session_state.denominator} 를 더 약분해봅시다.")
     st.info("약분할 숫자를 선택하세요.")
-    user_divisor = st.number_input("어떤 수로 나눌 수 있나요? (2~50)", min_value=2, max_value=50, step=1, key="user_divisor_input_repeat")
-    if st.button("완료", key="divisor_btn_repeat"):
+    user_divisor = st.number_input("어떤 수로 나눌 수 있나요? (2~50)", min_value=2, max_value=50, step=1, key=f"user_divisor_input_repeat_{st.session_state.numerator}_{st.session_state.denominator}")
+    if st.button("완료", key=f"divisor_btn_repeat_{st.session_state.numerator}_{st.session_state.denominator}"):
         divisors = get_divisors(st.session_state.numerator, st.session_state.denominator)
         if user_divisor in divisors:
             st.session_state.current_divisor = user_divisor
-            st.session_state.step = 2.6
+            st.session_state.step = 2.7
+            st.rerun()
         else:
             st.warning("답이 맞지 않아요. 다시 생각해보세요")
 
@@ -98,15 +105,11 @@ if st.session_state.step == 2.7:
         correct_num = st.session_state.numerator // st.session_state.current_divisor
         correct_den = st.session_state.denominator // st.session_state.current_divisor
         if user_num == correct_num and user_den == correct_den:
+            st.session_state.numerator = correct_num
+            st.session_state.denominator = correct_den
             if math.gcd(correct_num, correct_den) == 1:
-                # ✅ FIX: 최종 값으로 갱신 후 step=3
-                st.session_state.numerator = correct_num
-                st.session_state.denominator = correct_den
                 st.session_state.step = 3
             else:
-                st.info("기약분수가 아니네요. 더 약분해 볼까요?")
-                st.session_state.numerator = correct_num
-                st.session_state.denominator = correct_den
                 st.session_state.current_divisor = None
                 st.session_state.step = 2.5
         else:

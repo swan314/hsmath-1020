@@ -22,38 +22,30 @@ st.markdown("""
         text-align: center;
       }
 
-      /* 중앙 래퍼: 모든 본문 위젯 10cm 폭 + 중앙 정렬 */
+      /* 중앙 래퍼: 본문 위젯 10cm + 중앙 정렬 */
       .center-wrap { width: 10cm; margin: 0 auto; text-align: center; }
 
-      /* 입력창 */
+      /* 입력창 10cm 중앙 */
       div[data-testid="stNumberInput"] { width: 10cm !important; margin: 0 auto; }
 
-      /* 안내 박스 */
+      /* 안내 박스 10cm 중앙 */
       .ui-box { width: 10cm; margin: 8px auto; padding: 10px 12px; border-radius: 10px; text-align: center; }
       .ui-info { background: #eef6ff; border: 1px solid #d5e9ff; color: #244e75; }
       .ui-success { background: #eef9f1; border: 1px solid #cfeeda; color: #24623d; }
       .ui-warning { background: #fff7e6; border: 1px solid #ffe0a3; color: #6a4b14; }
 
-      /* ✅ 버튼 공통 스타일 (10cm 래퍼 안 오른쪽 정렬) */
+      /* ✅ 버튼 영역: 10cm 컨테이너 안 '왼쪽 정렬' */
       .btn-area {
         width: 10cm;
-        margin: 10px auto;
+        margin: 10px auto 6px auto;
         display: flex;
-        justify-content: flex-end;
+        justify-content: flex-start;   /* ← 왼쪽 정렬 */
       }
       .btn-area button {
-        width: 5cm;
+        width: 5cm !important;
         height: 2.5em;
         font-size: 1.0rem;
         font-weight: 600;
-        background-color: #2a6fb2;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-      }
-      .btn-area button:hover {
-        background-color: #1e568c;
       }
 
       /* 단계 시각 효과 */
@@ -66,7 +58,7 @@ st.markdown("""
       @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-3px)} 50%{transform:translateX(3px)} 75%{transform:translateX(-2px)} }
       @keyframes pop { 0%,100%{transform:scale(1)} 50%{transform:scale(1.18)} }
 
-      /* 단계 상자 */
+      /* 단계 상자 10cm 중앙 */
       .stage-box { margin:4px auto 12px auto; padding:10px 12px; border:1px dashed #e1e1e1; border-radius:10px; background:#fafafa; width: 10cm; }
     </style>
     <div class="title-wrap">
@@ -157,6 +149,7 @@ if st.session_state.step == 1:
     user_div = st.number_input("어떤 수로 나눌 수 있나요? (2~50)", min_value=1, max_value=50, step=1,
                                key="user_div_input", format="%d")
 
+    # ✅ 버튼: 10cm 컨테이너 안 '왼쪽 정렬'
     st.markdown('<div class="btn-area">', unsafe_allow_html=True)
     if st.button("완료", key="btn_div"):
         if user_div in get_divisors(n, d):
@@ -193,6 +186,7 @@ elif st.session_state.step == 2:
 elif st.session_state.step == 2.5:
     ui_info("기약분수가 아니네요. 다시 약분해 봅시다.")
     st.markdown(f"<p style='text-align:center;'>현재 분수: <b>{st.session_state.numerator}/{st.session_state.denominator}</b></p>", unsafe_allow_html=True)
+
     st.markdown('<div class="btn-area">', unsafe_allow_html=True)
     if st.button("다음", key="btn_next"):
         st.session_state.current_divisor = None
@@ -204,6 +198,7 @@ elif st.session_state.step == 2.5:
 # -------------------------------
 elif st.session_state.step == 3:
     ui_success(f"정답: {st.session_state.numerator}/{st.session_state.denominator}  <br>기약분수 입니다. 잘 했어요! 👏")
+
     st.markdown('<div class="btn-area">', unsafe_allow_html=True)
     if st.button("새로운 문제 풀기", key="btn_new"):
         set_fraction(*generate_fraction())

@@ -5,13 +5,12 @@ import streamlit as st
 # ===== 🎒 중학교 수학 교실용 헤더 =====
 st.markdown("""
     <style>
-      /* 전체 톤: 밝고 따뜻한 파스텔 */
       .title-wrap { text-align:center; margin-top:-14px; margin-bottom:6px; }
       .class-title { font-size: 2.1em; font-weight: 800; color: #2a6fb2; margin: 0; letter-spacing: 0.5px; }
       .class-title .accent { color: #f2a900; }
       .subtitle { font-size: 1.05em; color: #5b6b7a; margin-top: 4px; }
 
-      /* ✅ 교실 미션 박스: 15cm 중앙 */
+      /* ✅ 교실 미션 박스 */
       .chalkboard {
         background: #f9fcff; 
         border: 1px solid #e4eef8; 
@@ -22,24 +21,24 @@ st.markdown("""
         text-align: center;
       }
 
-      /* 중앙 래퍼: 본문 위젯 10cm + 중앙 정렬 */
+      /* 중앙 래퍼 */
       .center-wrap { width: 10cm; margin: 0 auto; text-align: center; }
 
-      /* 입력창 10cm 중앙 */
+      /* 입력창 */
       div[data-testid="stNumberInput"] { width: 10cm !important; margin: 0 auto; }
 
-      /* 안내 박스 10cm 중앙 */
+      /* 안내 박스 */
       .ui-box { width: 10cm; margin: 8px auto; padding: 10px 12px; border-radius: 10px; text-align: center; }
       .ui-info { background: #eef6ff; border: 1px solid #d5e9ff; color: #244e75; }
       .ui-success { background: #eef9f1; border: 1px solid #cfeeda; color: #24623d; }
       .ui-warning { background: #fff7e6; border: 1px solid #ffe0a3; color: #6a4b14; }
 
-      /* ✅ 버튼 영역: 10cm 컨테이너 안 '왼쪽 정렬' */
+      /* ✅ 버튼 영역 */
       .btn-area {
         width: 10cm;
         margin: 10px auto 6px auto;
         display: flex;
-        justify-content: flex-content;   /* ← 왼쪽 정렬 */
+        justify-content: flex-start;
       }
       .btn-area button {
         width: 5cm !important;
@@ -58,8 +57,11 @@ st.markdown("""
       @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-3px)} 50%{transform:translateX(3px)} 75%{transform:translateX(-2px)} }
       @keyframes pop { 0%,100%{transform:scale(1)} 50%{transform:scale(1.18)} }
 
-      /* 단계 상자 10cm 중앙 */
+      /* 단계 상자 */
       .stage-box { margin:4px auto 12px auto; padding:10px 12px; border:1px dashed #e1e1e1; border-radius:10px; background:#fafafa; width: 10cm; }
+
+      /* ✅ 큰 분수 표시 */
+      .big-fraction { font-size: 200%; text-align:center; margin-bottom: 8px; }
     </style>
     <div class="title-wrap">
         <h1 class="class-title">🧮 분수의 약분 <span class="accent">마스터 👑</span></h1>
@@ -104,7 +106,7 @@ def ui_info(text): st.markdown(f'<div class="ui-box ui-info">{text}</div>', unsa
 def ui_success(text): st.markdown(f'<div class="ui-box ui-success">{text}</div>', unsafe_allow_html=True)
 def ui_warning(text): st.markdown(f'<div class="ui-box ui-warning">{text}</div>', unsafe_allow_html=True)
 
-# 단계 표시 및 애니메이션
+# 단계 표시
 def show_progress(step):
     labels = {1:"① 공약수 찾기 단계", 2:"② 약분 계산 단계", 2.5:"③ 다시 약분하기 단계", 3:"④ 기약분수 완성 단계"}
     st.markdown(f"""
@@ -143,13 +145,14 @@ show_stage_visual(st.session_state.step)
 # STEP 1
 # -------------------------------
 if st.session_state.step == 1:
-    st.markdown(f"<h4 style='text-align:center;'>문제: {n}/{d} 를 약분해봅시다.</h4>", unsafe_allow_html=True)
-    ui_info("분수를 보고, 어떤 수로 나눌 수 있는지 직접 입력하세요.")
+    st.markdown("<div class='big-fraction'>", unsafe_allow_html=True)
+    st.latex(f"\\Large \\frac{{{n}}}{{{d}}}")
+    st.markdown("</div>", unsafe_allow_html=True)
 
+    ui_info("분수를 보고, 어떤 수로 나눌 수 있는지 직접 입력하세요.")
     user_div = st.number_input("어떤 수로 나눌 수 있나요? (2~50)", min_value=1, max_value=50, step=1,
                                key="user_div_input", format="%d")
 
-    # ✅ 버튼: 10cm 컨테이너 안 '왼쪽 정렬'
     st.markdown('<div class="btn-area">', unsafe_allow_html=True)
     if st.button("완료", key="btn_div"):
         if user_div in get_divisors(n, d):
@@ -158,13 +161,15 @@ if st.session_state.step == 1:
         else:
             ui_warning("답이 맞지 않아요. 다시 생각해보세요.")
     st.markdown('</div>', unsafe_allow_html=True)
- 
+
 # -------------------------------
 # STEP 2
 # -------------------------------
 elif st.session_state.step == 2:
     ui_success(f"좋아요! 이제 {st.session_state.current_divisor}로 약분해봅시다.")
-    st.markdown(f"<p style='text-align:center;'>문제로 제시한 분수 {n}/{d} 를 {st.session_state.current_divisor}로 나누세요.</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='text-align:center;'>문제로 제시한 분수</p>", unsafe_allow_html=True)
+    st.latex(f"\\Large \\frac{{{n}}}{{{d}}}")
+    st.markdown(f"<p style='text-align:center;'>를 {st.session_state.current_divisor}로 나누세요.</p>", unsafe_allow_html=True)
 
     num = st.number_input("분자(나눈 결과)", min_value=1, max_value=n, step=1, key=f"num_{n}_{d}")
     den = st.number_input("분모(나눈 결과)", min_value=1, max_value=d, step=1, key=f"den_{n}_{d}")
@@ -185,8 +190,7 @@ elif st.session_state.step == 2:
 # -------------------------------
 elif st.session_state.step == 2.5:
     ui_info("기약분수가 아니네요. 다시 약분해 봅시다.")
-    st.markdown(f"<p style='text-align:center;'>현재 분수: <b>{st.session_state.numerator}/{st.session_state.denominator}</b></p>", unsafe_allow_html=True)
-
+    st.latex(f"\\Large \\frac{{{st.session_state.numerator}}}{{{st.session_state.denominator}}}")
     st.markdown('<div class="btn-area">', unsafe_allow_html=True)
     if st.button("다음", key="btn_next"):
         st.session_state.current_divisor = None
@@ -197,8 +201,8 @@ elif st.session_state.step == 2.5:
 # STEP 3
 # -------------------------------
 elif st.session_state.step == 3:
-    ui_success(f"정답: {st.session_state.numerator}/{st.session_state.denominator}  <br>기약분수 입니다. 잘 했어요! 👏")
-
+    ui_success("정답이에요! 기약분수를 완성했습니다 👏")
+    st.latex(f"\\Large \\frac{{{st.session_state.numerator}}}{{{st.session_state.denominator}}}")
     st.markdown('<div class="btn-area">', unsafe_allow_html=True)
     if st.button("새로운 문제 풀기", key="btn_new"):
         set_fraction(*generate_fraction())

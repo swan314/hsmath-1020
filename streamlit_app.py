@@ -34,12 +34,12 @@ st.markdown("""
       .ui-success { background: #eef9f1; border: 1px solid #cfeeda; color: #24623d; }
       .ui-warning { background: #fff7e6; border: 1px solid #ffe0a3; color: #6a4b14; }
 
-      /* ✅ 버튼 영역: 10cm 컨테이너 안 '오른쪽 정렬' */
+      /* ✅ 버튼 영역: 10cm 컨테이너 안 '왼쪽 정렬' */
       .btn-area {
         width: 10cm;
         margin: 10px auto 6px auto;
         display: flex;
-        justify-content: flex-end;   /* ← 오른쪽 정렬 */
+        justify-content: flex-content;   /* ← 왼쪽 정렬 */
       }
       .btn-area button {
         width: 5cm !important;
@@ -158,7 +158,7 @@ if st.session_state.step == 1:
         else:
             ui_warning("답이 맞지 않아요. 다시 생각해보세요.")
     st.markdown('</div>', unsafe_allow_html=True)
-
+ 
 # -------------------------------
 # STEP 2
 # -------------------------------
